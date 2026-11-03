@@ -7,6 +7,7 @@
   const GRADE = {EX:"Excellent",ID:"Ideal",VG:"Very Good",G:"Good",GD:"Good",F:"Fair",P:"Poor"};
   const FLUOR = {N:"None",NON:"None",F:"Faint",FNT:"Faint",M:"Medium",MED:"Medium",S:"Strong",STG:"Strong",VS:"Very Strong",VST:"Very Strong",SL:"Slight",VSL:"Very Slight"};
   const PAGE = 48;
+  const DEFAULT_SORT = { N: "price-desc", L: "price-asc" };
   const $ = (id) => document.getElementById(id);
   const money = (n) => "$" + n.toLocaleString("en-US");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -112,6 +113,8 @@
   $("typeSeg").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     state.type = b.dataset.type;
+    // Natural opens high to low, lab-grown low to high.
+    state.sort = DEFAULT_SORT[state.type]; $("sort").value = state.sort;
     $("typeSeg").querySelectorAll("button").forEach(x => x.setAttribute("aria-selected", x === b));
     apply();
   });
