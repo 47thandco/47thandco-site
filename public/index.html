@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loose Diamonds</title>
+<meta name="description" content="Certified natural and lab-grown loose diamonds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="#" id="brand">Your Store Name</a>
+    <nav class="contact" id="contact"></nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Certified loose diamonds</p>
+    <h1>Find your diamond</h1>
+    <p class="lede">Every stone is independently graded by GIA or IGI, with photos, video and the full grading report.</p>
+    <div class="seg" role="tablist" id="typeSeg">
+      <button role="tab" data-type="N" aria-selected="true">Natural</button>
+      <button role="tab" data-type="L" aria-selected="false">Lab-grown</button>
+    </div>
+  </div>
+</section>
+
+<main class="wrap layout">
+  <aside class="filters" id="filters">
+    <div class="filters-head">
+      <h2>Filters</h2>
+      <button class="link" id="resetBtn">Reset</button>
+      <button class="close-filters" id="closeFilters" aria-label="Close filters">×</button>
+    </div>
+
+    <fieldset><legend>Shape</legend><div class="chips" id="shapeChips"></div></fieldset>
+
+    <fieldset><legend>Carat</legend>
+      <div class="range"><input type="number" id="caratMin" min="0" step="0.1" placeholder="Min" inputmode="decimal"><span>to</span><input type="number" id="caratMax" min="0" step="0.1" placeholder="Max" inputmode="decimal"></div>
+    </fieldset>
+
+    <fieldset><legend>Price ($)</legend>
+      <div class="range"><input type="number" id="priceMin" min="0" step="100" placeholder="Min" inputmode="numeric"><span>to</span><input type="number" id="priceMax" min="0" step="100" placeholder="Max" inputmode="numeric"></div>
+    </fieldset>
+
+    <fieldset><legend>Color</legend><div class="chips small" id="colorChips"></div></fieldset>
+    <fieldset><legend>Clarity</legend><div class="chips small" id="clarityChips"></div></fieldset>
+    <fieldset><legend>Grading lab</legend><div class="chips small" id="labChips"></div></fieldset>
+  </aside>
+
+  <section class="results">
+    <div class="toolbar">
+      <button class="open-filters" id="openFilters">Filters</button>
+      <p id="count" class="count">Loading inventory…</p>
+      <label class="sort">Sort
+        <select id="sort">
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="carat-desc">Carat: high to low</option>
+          <option value="carat-asc">Carat: low to high</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="more"><button id="moreBtn" hidden>Show more diamonds</button></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p id="footStore"></p>
+    <p class="muted">Availability is confirmed before every purchase. Prices in US dollars. <span id="updated"></span></p>
+  </div>
+</footer>
+
+<dialog id="detail" aria-labelledby="dTitle">
+  <button class="d-close" id="dClose" aria-label="Close">×</button>
+  <div class="d-body">
+    <div class="d-media" id="dMedia"></div>
+    <div class="d-info">
+      <p class="eyebrow" id="dType"></p>
+      <h2 id="dTitle"></h2>
+      <p class="d-price" id="dPrice"></p>
+      <div class="d-actions" id="dActions"></div>
+      <dl class="specs" id="dSpecs"></dl>
+      <p class="muted small" id="dRef"></p>
+    </div>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

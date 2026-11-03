@@ -1,0 +1,7 @@
+config/secrets.json
+config/markup.json
+data/
+public/inventory.json
+public/inventory.json.tmp
+.DS_Store
+__pycache__/
