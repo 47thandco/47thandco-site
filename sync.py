@@ -39,6 +39,10 @@ def fail(msg):
 
 def api_key():
     k = (os.environ.get("BELGIUM_API_KEY") or "").strip() or (load_json(os.path.join(ROOT, "config", "secrets.json"), {}) or {}).get("belgium_api_key")
+    # Tolerate a pasted URL, "key=...", quotes or stray spaces around the key.
+    if k and "key=" in k:
+        k = urllib.parse.parse_qs(urllib.parse.urlparse(k if "?" in k else "?" + k).query).get("key", [k])[0]
+    k = (k or "").strip().strip('"').strip("'").strip()
     if not k:
         fail("No API key. Put it in config/secrets.json or set the BELGIUM_API_KEY secret.")
     return k
@@ -52,7 +56,11 @@ def fetch_page(kind, page, key, tries=4):
             with urllib.request.urlopen(req, timeout=90) as r:
                 d = json.loads(r.read())
             if d.get("status") != 1:
-                raise RuntimeError(d.get("message") or "API returned status 0")
+                msg = d.get("message") or "API returned status 0"
+                if "KEY" in msg.upper():
+                    fail(f"Belgium Diamonds rejected the API key ({msg}). The saved key is {len(key)} characters "
+                         f"starting '{key[:3]}'. Re-copy it from their User API page into the BELGIUM_API_KEY secret.")
+                raise RuntimeError(msg)
             return d
         except Exception as e:
             if attempt == tries:
