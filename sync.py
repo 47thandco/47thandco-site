@@ -30,10 +30,17 @@ def load_json(path, default=None):
         return default
 
 
+def fail(msg):
+    """Print a GitHub-visible error annotation and stop."""
+    if os.environ.get("GITHUB_ACTIONS"):
+        print(f"::error title=Sync failed::{msg}")
+    sys.exit(msg)
+
+
 def api_key():
-    k = os.environ.get("BELGIUM_API_KEY") or (load_json(os.path.join(ROOT, "config", "secrets.json"), {}) or {}).get("belgium_api_key")
+    k = (os.environ.get("BELGIUM_API_KEY") or "").strip() or (load_json(os.path.join(ROOT, "config", "secrets.json"), {}) or {}).get("belgium_api_key")
     if not k:
-        sys.exit("No API key. Put it in config/secrets.json or set BELGIUM_API_KEY.")
+        fail("No API key. Put it in config/secrets.json or set the BELGIUM_API_KEY secret.")
     return k
 
 
@@ -49,7 +56,10 @@ def fetch_page(kind, page, key, tries=4):
             return d
         except Exception as e:
             if attempt == tries:
-                raise
+                code = getattr(e, "code", None)
+                fail(f"Belgium Diamonds API error on {kind} page {page}: "
+                     + (f"HTTP {code}" if code else str(e))
+                     + (" (their server may be blocking GitHub's servers)" if code in (401, 403) else ""))
             print(f"  {kind} page {page} failed ({e}); retrying...")
             time.sleep(3 * attempt)
 
@@ -74,9 +84,14 @@ def num(v):
 
 def load_pricing():
     """Markup lives OUTSIDE the public repo: env MARKUP_SETTINGS (GitHub secret) or config/markup.json."""
-    env = os.environ.get("MARKUP_SETTINGS")
+    env = (os.environ.get("MARKUP_SETTINGS") or "").strip()
     if env:
-        return json.loads(env)
+        # Macs often turn straight quotes into curly ones when pasting.
+        env = env.replace("\u201c", '"').replace("\u201d", '"').replace("\u2018", "'").replace("\u2019", "'")
+        try:
+            return json.loads(env)
+        except ValueError as e:
+            fail(f"MARKUP_SETTINGS secret is not valid JSON ({e}). Re-paste it exactly as given.")
     p = load_json(os.path.join(ROOT, "config", "markup.json"))
     if p:
         return p
@@ -164,7 +179,7 @@ def main():
     # Safety: never wipe the site because of a bad fetch.
     prev = load_json(PUBLIC_FILE)
     if prev and len(public) < 0.5 * len(prev.get("rows", [])):
-        sys.exit(f"Refusing to publish: only {len(public)} stones vs {len(prev['rows'])} last time. Check the feed.")
+        fail(f"Refusing to publish: only {len(public)} stones vs {len(prev['rows'])} last time. Check the feed.")
     if dry:
         print("Dry run: nothing written.")
         return
