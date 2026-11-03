@@ -144,13 +144,15 @@ def build(raw_by_kind, s):
     public, private = [], []
     skipped = 0
     for kind, rows in raw_by_kind.items():
+        # Optional per-type pricing: {"lab": {...}, "natural": {...}} overrides the shared settings.
+        sk = {**s, **(s.get(kind) or {})}
         for r in rows:
             carat, per_ct = num(r.get("Weight")), num(r.get("Buy_Price"))
             if carat <= 0 or per_ct <= 0:
                 skipped += 1
                 continue
             cost = round(per_ct * carat, 2)
-            price = retail_price(cost, s)
+            price = retail_price(cost, sk)
             color, fancy = color_name(r)
             sid = str(r.get("Stock_No"))
             public.append([
@@ -165,7 +167,7 @@ def build(raw_by_kind, s):
             ])
             private.append({"stock_no": sid, "type": kind, "shape": r.get("Shape"), "carat": carat,
                             "color": color, "clarity": r.get("Clarity"), "lab": r.get("Lab"),
-                            "per_carat_cost": per_ct, "stone_cost": cost, "markup_pct": markup_for(cost, s),
+                            "per_carat_cost": per_ct, "stone_cost": cost, "markup_pct": markup_for(cost, sk),
                             "retail": price, "profit": round(price - cost, 2)})
     return public, private, skipped
 
