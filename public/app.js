@@ -13,7 +13,7 @@
 
   let stones = [], byId = new Map(), store = {}, filtered = [], shown = 0;
   const state = { type: "N", shapes: new Set(), colors: new Set(), clarity: new Set(), labs: new Set(),
-                  caratMin: null, caratMax: null, priceMin: null, priceMax: null, sort: "price-asc" };
+                  caratMin: null, caratMax: null, priceMin: null, priceMax: null, sort: "price-desc" };
 
   const shapeGroup = (s) => {
     const l = s.toLowerCase();
